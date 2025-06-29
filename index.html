@@ -1,1003 +1,157 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>D&D 5e Character Generator</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Jogos Vorazes - Torneio</title>
     <style>
-        .tab-content {
-            display: none;
-        }
-        .tab-content.active {
-            display: block;
-        }
-        .dice-roller {
-            font-family: 'Courier New', monospace;
-        }
-        .character-sheet {
-            background-color: #f5e6c8;
-            border: 2px solid #8b4513;
-            font-family: 'Times New Roman', serif;
-        }
-        .stat-box {
-            background-color: #fff;
-            border: 1px solid #8b4513;
-            border-radius: 5px;
-        }
-        .skill-list {
-            column-count: 2;
-        }
-        @media (max-width: 768px) {
-            .skill-list {
-                column-count: 1;
-            }
-        }
-        .printable {
-            background-color: white;
+        body {
+            font-family: Arial;
+            background-color: #eee;
             padding: 20px;
-            margin: 0 auto;
-            max-width: 800px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 100px;
+            margin-top: 10px;
+            background: #222;
+            color: #fff;
+            border: none;
+            padding: 10px;
+        }
+
+        button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+
+        .evento {
+            margin: 10px 0;
+        }
+
+        .rodada {
+            margin-top: 30px;
+            border-top: 1px solid #444;
+            padding-top: 10px;
+        }
+
+        h1,
+        h2,
+        h3 {
+            color: #000000;
         }
     </style>
 </head>
-<body class="bg-gray-100">
-    <div class="container mx-auto px-4 py-8">
-        <header class="text-center mb-8">
-            <h1 class="text-4xl font-bold text-red-800 mb-2">D&D 5e Character Generator</h1>
-            <p class="text-lg text-gray-700">Create your perfect adventurer or let fate decide!</p>
-        </header>
 
-        <div class="bg-white rounded-lg shadow-lg overflow-hidden mb-8">
-            <div class="flex border-b">
-                <button class="tab-btn py-4 px-6 font-medium text-gray-700 hover:text-red-700 focus:outline-none active" data-tab="manual">Manual Creation</button>
-                <button class="tab-btn py-4 px-6 font-medium text-gray-700 hover:text-red-700 focus:outline-none" data-tab="random">Random Generator</button>
-            </div>
+<body>
 
-            <!-- Manual Creation Tab -->
-            <div id="manual" class="tab-content active p-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Basic Info -->
-                    <div class="bg-gray-50 p-4 rounded-lg">
-                        <h2 class="text-xl font-semibold mb-4 text-red-800 border-b pb-2">Basic Information</h2>
-                        <div class="space-y-4">
-                            <div>
-                                <label class="block text-gray-700 mb-1">Character Name</label>
-                                <input type="text" id="charName" class="w-full px-3 py-2 border rounded">
-                            </div>
-                            <div>
-                                <label class="block text-gray-700 mb-1">Race</label>
-                                <select id="raceSelect" class="w-full px-3 py-2 border rounded">
-                                    <option value="">Select Race</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-gray-700 mb-1">Class</label>
-                                <select id="classSelect" class="w-full px-3 py-2 border rounded">
-                                    <option value="">Select Class</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-gray-700 mb-1">Background</label>
-                                <select id="backgroundSelect" class="w-full px-3 py-2 border rounded">
-                                    <option value="">Select Background</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-gray-700 mb-1">Alignment</label>
-                                <select id="alignmentSelect" class="w-full px-3 py-2 border rounded">
-                                    <option value="">Select Alignment</option>
-                                    <option value="Lawful Good">Lawful Good</option>
-                                    <option value="Neutral Good">Neutral Good</option>
-                                    <option value="Chaotic Good">Chaotic Good</option>
-                                    <option value="Lawful Neutral">Lawful Neutral</option>
-                                    <option value="True Neutral">True Neutral</option>
-                                    <option value="Chaotic Neutral">Chaotic Neutral</option>
-                                    <option value="Lawful Evil">Lawful Evil</option>
-                                    <option value="Neutral Evil">Neutral Evil</option>
-                                    <option value="Chaotic Evil">Chaotic Evil</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
+    <h1>🔥 Jogos Vorazes - Simulador de Torneio</h1>
+    <label>Digite os participantes (um por linha):</label>
+    <textarea id="lutadores" placeholder="Exemplo:\nKatniss\nPeeta\nCato\nRue"></textarea>
+    <br>
+    <button onclick="iniciarJogos()">Iniciar Jogos</button>
 
-                    <!-- Ability Scores -->
-                    <div class="bg-gray-50 p-4 rounded-lg">
-                        <h2 class="text-xl font-semibold mb-4 text-red-800 border-b pb-2">Ability Scores</h2>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="stat-box p-3 text-center">
-                                <label class="block font-bold">Strength</label>
-                                <input type="number" id="strScore" min="3" max="20" class="w-full text-center text-xl font-bold border-b my-1" value="10">
-                                <div class="text-sm">Mod: <span id="strMod">+0</span></div>
-                            </div>
-                            <div class="stat-box p-3 text-center">
-                                <label class="block font-bold">Dexterity</label>
-                                <input type="number" id="dexScore" min="3" max="20" class="w-full text-center text-xl font-bold border-b my-1" value="10">
-                                <div class="text-sm">Mod: <span id="dexMod">+0</span></div>
-                            </div>
-                            <div class="stat-box p-3 text-center">
-                                <label class="block font-bold">Constitution</label>
-                                <input type="number" id="conScore" min="3" max="20" class="w-full text-center text-xl font-bold border-b my-1" value="10">
-                                <div class="text-sm">Mod: <span id="conMod">+0</span></div>
-                            </div>
-                            <div class="stat-box p-3 text-center">
-                                <label class="block font-bold">Intelligence</label>
-                                <input type="number" id="intScore" min="3" max="20" class="w-full text-center text-xl font-bold border-b my-1" value="10">
-                                <div class="text-sm">Mod: <span id="intMod">+0</span></div>
-                            </div>
-                            <div class="stat-box p-3 text-center">
-                                <label class="block font-bold">Wisdom</label>
-                                <input type="number" id="wisScore" min="3" max="20" class="w-full text-center text-xl font-bold border-b my-1" value="10">
-                                <div class="text-sm">Mod: <span id="wisMod">+0</span></div>
-                            </div>
-                            <div class="stat-box p-3 text-center">
-                                <label class="block font-bold">Charisma</label>
-                                <input type="number" id="chaScore" min="3" max="20" class="w-full text-center text-xl font-bold border-b my-1" value="10">
-                                <div class="text-sm">Mod: <span id="chaMod">+0</span></div>
-                            </div>
-                        </div>
-                        <div class="mt-4">
-                            <button id="rollStats" class="bg-red-700 hover:bg-red-800 text-white px-4 py-2 rounded flex items-center">
-                                <i class="fas fa-dice mr-2"></i> Roll Random Stats
-                            </button>
-                            <div class="mt-2 text-sm text-gray-600">
-                                <label class="flex items-center">
-                                    <input type="radio" name="statMethod" value="standard" checked class="mr-2"> Standard Array
-                                </label>
-                                <label class="flex items-center">
-                                    <input type="radio" name="statMethod" value="pointbuy" class="mr-2"> Point Buy
-                                </label>
-                                <label class="flex items-center">
-                                    <input type="radio" name="statMethod" value="roll" class="mr-2"> Roll 4d6 drop lowest
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Additional Options -->
-                <div class="mt-6 bg-gray-50 p-4 rounded-lg">
-                    <h2 class="text-xl font-semibold mb-4 text-red-800 border-b pb-2">Additional Options</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div>
-                            <h3 class="font-medium mb-2">Level</h3>
-                            <select id="levelSelect" class="w-full px-3 py-2 border rounded">
-                                <option value="1">Level 1</option>
-                                <option value="2">Level 2</option>
-                                <option value="3">Level 3</option>
-                                <option value="4">Level 4</option>
-                                <option value="5">Level 5</option>
-                                <option value="6">Level 6</option>
-                                <option value="7">Level 7</option>
-                                <option value="8">Level 8</option>
-                                <option value="9">Level 9</option>
-                                <option value="10">Level 10</option>
-                                <option value="11">Level 11</option>
-                                <option value="12">Level 12</option>
-                                <option value="13">Level 13</option>
-                                <option value="14">Level 14</option>
-                                <option value="15">Level 15</option>
-                                <option value="16">Level 16</option>
-                                <option value="17">Level 17</option>
-                                <option value="18">Level 18</option>
-                                <option value="19">Level 19</option>
-                                <option value="20">Level 20</option>
-                            </select>
-                        </div>
-                        <div>
-                            <h3 class="font-medium mb-2">Subrace</h3>
-                            <select id="subraceSelect" class="w-full px-3 py-2 border rounded" disabled>
-                                <option value="">Select Race First</option>
-                            </select>
-                        </div>
-                        <div>
-                            <h3 class="font-medium mb-2">Subclass</h3>
-                            <select id="subclassSelect" class="w-full px-3 py-2 border rounded" disabled>
-                                <option value="">Select Class First</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Generate Button -->
-                <div class="mt-6 text-center">
-                    <button id="generateManual" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg text-lg font-semibold">
-                        Generate Character Sheet
-                    </button>
-                </div>
-            </div>
-
-            <!-- Random Generator Tab -->
-            <div id="random" class="tab-content p-6">
-                <div class="bg-gray-50 p-6 rounded-lg text-center">
-                    <h2 class="text-2xl font-semibold mb-4 text-red-800">Random Character Generator</h2>
-                    <p class="mb-6 text-gray-700">Let the dice decide your fate! Choose a level and we'll generate a complete character for you.</p>
-                    
-                    <div class="max-w-md mx-auto">
-                        <label class="block text-gray-700 mb-2">Character Level</label>
-                        <select id="randomLevel" class="w-full px-4 py-2 border rounded mb-4">
-                            <option value="1">Level 1</option>
-                            <option value="2">Level 2</option>
-                            <option value="3" selected>Level 3</option>
-                            <option value="4">Level 4</option>
-                            <option value="5">Level 5</option>
-                            <option value="6">Level 6</option>
-                            <option value="7">Level 7</option>
-                            <option value="8">Level 8</option>
-                            <option value="9">Level 9</option>
-                            <option value="10">Level 10</option>
-                            <option value="11">Level 11</option>
-                            <option value="12">Level 12</option>
-                            <option value="13">Level 13</option>
-                            <option value="14">Level 14</option>
-                            <option value="15">Level 15</option>
-                            <option value="16">Level 16</option>
-                            <option value="17">Level 17</option>
-                            <option value="18">Level 18</option>
-                            <option value="19">Level 19</option>
-                            <option value="20">Level 20</option>
-                        </select>
-                        
-                        <div class="mb-4">
-                            <label class="flex items-center justify-center">
-                                <input type="checkbox" id="includeName" class="mr-2" checked> Include random name
-                            </label>
-                        </div>
-                        
-                        <button id="generateRandom" class="bg-red-700 hover:bg-red-800 text-white px-6 py-3 rounded-lg text-lg font-semibold flex items-center justify-center mx-auto">
-                            <i class="fas fa-dice-d20 mr-2"></i> Generate Random Character
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Character Sheet Display -->
-        <div id="characterSheet" class="character-sheet rounded-lg shadow-lg p-6 mt-8 hidden printable">
-            <div class="flex justify-between items-start mb-6">
-                <div>
-                    <h2 id="sheetName" class="text-3xl font-bold">Character Name</h2>
-                    <div id="sheetRaceClass" class="text-lg">Race & Class</div>
-                </div>
-                <div class="text-right">
-                    <div id="sheetLevel" class="text-xl font-bold">Level 1</div>
-                    <div id="sheetBackground">Background</div>
-                    <div id="sheetAlignment">Alignment</div>
-                </div>
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <!-- Left Column - Stats -->
-                <div class="md:col-span-1">
-                    <div class="stat-box p-4 mb-4">
-                        <div class="text-center">
-                            <div class="text-sm">Armor Class</div>
-                            <div id="sheetAC" class="text-3xl font-bold">10</div>
-                        </div>
-                    </div>
-                    <div class="stat-box p-4 mb-4">
-                        <div class="text-center">
-                            <div class="text-sm">Initiative</div>
-                            <div id="sheetInitiative" class="text-3xl font-bold">+0</div>
-                        </div>
-                    </div>
-                    <div class="stat-box p-4 mb-4">
-                        <div class="text-center">
-                            <div class="text-sm">Speed</div>
-                            <div id="sheetSpeed" class="text-3xl font-bold">30</div>
-                            <div class="text-xs">feet</div>
-                        </div>
-                    </div>
-                    <div class="stat-box p-4 mb-4">
-                        <div class="text-center">
-                            <div class="text-sm">Hit Points</div>
-                            <div id="sheetHP" class="text-3xl font-bold">10</div>
-                            <div id="sheetHitDice" class="text-xs">1d8</div>
-                        </div>
-                    </div>
-                    
-                    <!-- Ability Scores -->
-                    <div class="space-y-3">
-                        <div class="stat-box p-2 flex justify-between items-center">
-                            <div class="font-bold">STR</div>
-                            <div class="text-center">
-                                <div id="sheetStrScore" class="text-xl font-bold">10</div>
-                                <div id="sheetStrMod" class="text-sm">+0</div>
-                            </div>
-                        </div>
-                        <div class="stat-box p-2 flex justify-between items-center">
-                            <div class="font-bold">DEX</div>
-                            <div class="text-center">
-                                <div id="sheetDexScore" class="text-xl font-bold">10</div>
-                                <div id="sheetDexMod" class="text-sm">+0</div>
-                            </div>
-                        </div>
-                        <div class="stat-box p-2 flex justify-between items-center">
-                            <div class="font-bold">CON</div>
-                            <div class="text-center">
-                                <div id="sheetConScore" class="text-xl font-bold">10</div>
-                                <div id="sheetConMod" class="text-sm">+0</div>
-                            </div>
-                        </div>
-                        <div class="stat-box p-2 flex justify-between items-center">
-                            <div class="font-bold">INT</div>
-                            <div class="text-center">
-                                <div id="sheetIntScore" class="text-xl font-bold">10</div>
-                                <div id="sheetIntMod" class="text-sm">+0</div>
-                            </div>
-                        </div>
-                        <div class="stat-box p-2 flex justify-between items-center">
-                            <div class="font-bold">WIS</div>
-                            <div class="text-center">
-                                <div id="sheetWisScore" class="text-xl font-bold">10</div>
-                                <div id="sheetWisMod" class="text-sm">+0</div>
-                            </div>
-                        </div>
-                        <div class="stat-box p-2 flex justify-between items-center">
-                            <div class="font-bold">CHA</div>
-                            <div class="text-center">
-                                <div id="sheetChaScore" class="text-xl font-bold">10</div>
-                                <div id="sheetChaMod" class="text-sm">+0</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Proficiency Bonus -->
-                    <div class="stat-box p-4 mt-4">
-                        <div class="text-center">
-                            <div class="text-sm">Proficiency</div>
-                            <div id="sheetProfBonus" class="text-2xl font-bold">+2</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Middle Column - Skills and Proficiencies -->
-                <div class="md:col-span-2">
-                    <!-- Saving Throws -->
-                    <div class="mb-6">
-                        <h3 class="font-bold border-b pb-1 mb-2">Saving Throws</h3>
-                        <div id="sheetSavingThrows" class="grid grid-cols-2 gap-2">
-                            <!-- Filled by JavaScript -->
-                        </div>
-                    </div>
-                    
-                    <!-- Skills -->
-                    <div class="mb-6">
-                        <h3 class="font-bold border-b pb-1 mb-2">Skills</h3>
-                        <div id="sheetSkills" class="skill-list">
-                            <!-- Filled by JavaScript -->
-                        </div>
-                    </div>
-                    
-                    <!-- Proficiencies -->
-                    <div class="mb-6">
-                        <h3 class="font-bold border-b pb-1 mb-2">Proficiencies & Languages</h3>
-                        <div id="sheetProficiencies">
-                            <!-- Filled by JavaScript -->
-                        </div>
-                    </div>
-                    
-                    <!-- Features & Traits -->
-                    <div>
-                        <h3 class="font-bold border-b pb-1 mb-2">Features & Traits</h3>
-                        <div id="sheetFeatures">
-                            <!-- Filled by JavaScript -->
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Right Column - Equipment and Attacks -->
-                <div class="md:col-span-1">
-                    <!-- Attacks -->
-                    <div class="mb-6">
-                        <h3 class="font-bold border-b pb-1 mb-2">Attacks & Spellcasting</h3>
-                        <div id="sheetAttacks">
-                            <!-- Filled by JavaScript -->
-                        </div>
-                    </div>
-                    
-                    <!-- Equipment -->
-                    <div class="mb-6">
-                        <h3 class="font-bold border-b pb-1 mb-2">Equipment</h3>
-                        <div id="sheetEquipment">
-                            <!-- Filled by JavaScript -->
-                        </div>
-                    </div>
-                    
-                    <!-- Personality -->
-                    <div>
-                        <h3 class="font-bold border-b pb-1 mb-2">Personality</h3>
-                        <div id="sheetPersonality">
-                            <!-- Filled by JavaScript -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Print Button -->
-            <div class="mt-6 text-center no-print">
-                <button onclick="window.print()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
-                    <i class="fas fa-print mr-2"></i> Print Character Sheet
-                </button>
-            </div>
-        </div>
-    </div>
+    <div id="resultado"></div>
 
     <script>
-        // D&D 5e Data
-        const races = [
-            {name: "Dragonborn", subraces: ["Black", "Blue", "Brass", "Bronze", "Copper", "Gold", "Green", "Red", "Silver", "White"]},
-            {name: "Dwarf", subraces: ["Hill Dwarf", "Mountain Dwarf"]},
-            {name: "Elf", subraces: ["High Elf", "Wood Elf", "Dark Elf (Drow)"]},
-            {name: "Gnome", subraces: ["Forest Gnome", "Rock Gnome"]},
-            {name: "Half-Elf", subraces: []},
-            {name: "Half-Orc", subraces: []},
-            {name: "Halfling", subraces: ["Lightfoot", "Stout"]},
-            {name: "Human", subraces: ["Standard", "Variant"]},
-            {name: "Tiefling", subraces: []}
+        const motivos = [
+            "com um Golpe Mortal crítico de Guerreiro",
+            "após ser empurrado do alto de Orgrimmar",
+            "com uma sequência de Punhos da Furia do Monge",
+            "ao ser jogado em uma poça de Sopro de Dragão",
+            "com uma sequência implacável de Garras do Druida em forma felina",
+            "após cair de um grifo sem paraquedas",
+            "com um Ataque das Sombras seguido de Mutilar",
+            "após ser puxado pelo Grip do Cavaleiro da Morte direto para um abismo",
+            "em um duelo de honra nas areias de Nagrand",
+            "com uma explosão de setas arcanas disparadas em fúria",
+            "após ser encurralado em uma dungeon mítica +15",
+            "após esquecer de usar a defensiva",
+            "ao cair na lava durante a luta contra Ragnaros (Quem nunca ficou no pezinho?)",
+            "em uma batalha sangrenta pela Horda",
+            "após ativar o bl no momento errado",
+            "com um Toque Vampírico que drenou suas esperanças",
+            "com um disparo certeiro do Caçador enquanto fugia",
+            "com um golpe sombrio usando a lendária Espada Gélida",
+            "após ser atingido por uma habilidade do tipo frontal e não sair da área",
+            "ao tentar interromper um chefe e errar o tempo",
+            "após ser lançado pelos ares pelo chefe de dungeon",
+            "com uma Lâmina do Caos de um Caçador de Demônios",
+            "após ficar AFK no meio do campo de batalha",
+            "com um ataque aéreo vindo de um dirigível goblínico",
+            "após ficar em cima de uma poça roxa... de novo",
+            "com um golpe final no último segundo da arena",
+            "após pisar em uma armadilha do caçador e virar alvo fácil",
+            "ao ignorar a mecânica mais óbvia da luta",
+            "ao levar um toque da morte",
+            "após aprender a ser um cara tranquilo",
+            "usando os dois dedinhos da tranquilidade",
+            "após o healer não ter aguentado curar",
+            ""
         ];
 
-        const classes = [
-            {name: "Barbarian", subclasses: ["Path of the Berserker", "Path of the Totem Warrior"]},
-            {name: "Bard", subclasses: ["College of Lore", "College of Valor"]},
-            {name: "Cleric", subclasses: ["Knowledge Domain", "Life Domain", "Light Domain", "Nature Domain", "Tempest Domain", "Trickery Domain", "War Domain"]},
-            {name: "Druid", subclasses: ["Circle of the Land", "Circle of the Moon"]},
-            {name: "Fighter", subclasses: ["Champion", "Battle Master", "Eldritch Knight"]},
-            {name: "Monk", subclasses: ["Way of the Open Hand", "Way of Shadow", "Way of the Four Elements"]},
-            {name: "Paladin", subclasses: ["Oath of Devotion", "Oath of the Ancients", "Oath of Vengeance"]},
-            {name: "Ranger", subclasses: ["Hunter", "Beast Master"]},
-            {name: "Rogue", subclasses: ["Thief", "Assassin", "Arcane Trickster"]},
-            {name: "Sorcerer", subclasses: ["Draconic Bloodline", "Wild Magic"]},
-            {name: "Warlock", subclasses: ["The Archfey", "The Fiend", "The Great Old One"]},
-            {name: "Wizard", subclasses: ["School of Abjuration", "School of Conjuration", "School of Divination", "School of Enchantment", "School of Evocation", "School of Illusion", "School of Necromancy", "School of Transmutation"]}
-        ];
 
-        const backgrounds = [
-            "Acolyte", "Charlatan", "Criminal", "Entertainer", "Folk Hero", 
-            "Guild Artisan", "Hermit", "Noble", "Outlander", "Sage", 
-            "Sailor", "Soldier", "Urchin"
-        ];
 
-        const skills = [
-            "Acrobatics (Dex)", "Animal Handling (Wis)", "Arcana (Int)", 
-            "Athletics (Str)", "Deception (Cha)", "History (Int)", 
-            "Insight (Wis)", "Intimidation (Cha)", "Investigation (Int)", 
-            "Medicine (Wis)", "Nature (Int)", "Perception (Wis)", 
-            "Performance (Cha)", "Persuasion (Cha)", "Religion (Int)", 
-            "Sleight of Hand (Dex)", "Stealth (Dex)", "Survival (Wis)"
-        ];
-
-        const standardArray = [15, 14, 13, 12, 10, 8];
-        const pointBuyCosts = {
-            8: 0, 9: 1, 10: 2, 11: 3, 12: 4, 13: 5, 14: 7, 15: 9
-        };
-
-        // Initialize dropdowns
-        document.addEventListener('DOMContentLoaded', function() {
-            // Populate race dropdown
-            const raceSelect = document.getElementById('raceSelect');
-            races.forEach(race => {
-                const option = document.createElement('option');
-                option.value = race.name;
-                option.textContent = race.name;
-                raceSelect.appendChild(option);
-            });
-
-            // Populate class dropdown
-            const classSelect = document.getElementById('classSelect');
-            classes.forEach(cls => {
-                const option = document.createElement('option');
-                option.value = cls.name;
-                option.textContent = cls.name;
-                classSelect.appendChild(option);
-            });
-
-            // Populate background dropdown
-            const backgroundSelect = document.getElementById('backgroundSelect');
-            backgrounds.forEach(bg => {
-                const option = document.createElement('option');
-                option.value = bg;
-                option.textContent = bg;
-                backgroundSelect.appendChild(option);
-            });
-
-            // Tab switching
-            const tabBtns = document.querySelectorAll('.tab-btn');
-            tabBtns.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const tabId = this.getAttribute('data-tab');
-                    
-                    // Update active tab button
-                    tabBtns.forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    // Update active tab content
-                    document.querySelectorAll('.tab-content').forEach(content => {
-                        content.classList.remove('active');
-                    });
-                    document.getElementById(tabId).classList.add('active');
-                });
-            });
-
-            // Race selection updates subrace
-            raceSelect.addEventListener('change', function() {
-                const subraceSelect = document.getElementById('subraceSelect');
-                subraceSelect.innerHTML = '<option value="">None</option>';
-                
-                const selectedRace = races.find(r => r.name === this.value);
-                if (selectedRace && selectedRace.subraces.length > 0) {
-                    subraceSelect.disabled = false;
-                    selectedRace.subraces.forEach(subrace => {
-                        const option = document.createElement('option');
-                        option.value = subrace;
-                        option.textContent = subrace;
-                        subraceSelect.appendChild(option);
-                    });
-                } else {
-                    subraceSelect.disabled = true;
-                }
-            });
-
-            // Class selection updates subclass
-            classSelect.addEventListener('change', function() {
-                const subclassSelect = document.getElementById('subclassSelect');
-                subclassSelect.innerHTML = '<option value="">None</option>';
-                
-                const selectedClass = classes.find(c => c.name === this.value);
-                if (selectedClass && selectedClass.subclasses.length > 0) {
-                    subclassSelect.disabled = false;
-                    selectedClass.subclasses.forEach(subclass => {
-                        const option = document.createElement('option');
-                        option.value = subclass;
-                        option.textContent = subclass;
-                        subclassSelect.appendChild(option);
-                    });
-                } else {
-                    subclassSelect.disabled = true;
-                }
-            });
-
-            // Update ability modifiers when scores change
-            const abilityInputs = ['strScore', 'dexScore', 'conScore', 'intScore', 'wisScore', 'chaScore'];
-            abilityInputs.forEach(id => {
-                document.getElementById(id).addEventListener('change', updateAbilityModifiers);
-            });
-
-            // Roll stats button
-            document.getElementById('rollStats').addEventListener('click', rollRandomStats);
-
-            // Generate manual character
-            document.getElementById('generateManual').addEventListener('click', generateManualCharacter);
-
-            // Generate random character
-            document.getElementById('generateRandom').addEventListener('click', generateRandomCharacter);
-        });
-
-        // Calculate ability modifier from score
-        function getAbilityModifier(score) {
-            return Math.floor((score - 10) / 2);
-        }
-
-        // Format modifier with +/-
-        function formatModifier(mod) {
-            return mod >= 0 ? `+${mod}` : mod.toString();
-        }
-
-        // Update all ability modifiers
-        function updateAbilityModifiers() {
-            const strScore = parseInt(document.getElementById('strScore').value);
-            const dexScore = parseInt(document.getElementById('dexScore').value);
-            const conScore = parseInt(document.getElementById('conScore').value);
-            const intScore = parseInt(document.getElementById('intScore').value);
-            const wisScore = parseInt(document.getElementById('wisScore').value);
-            const chaScore = parseInt(document.getElementById('chaScore').value);
-
-            document.getElementById('strMod').textContent = formatModifier(getAbilityModifier(strScore));
-            document.getElementById('dexMod').textContent = formatModifier(getAbilityModifier(dexScore));
-            document.getElementById('conMod').textContent = formatModifier(getAbilityModifier(conScore));
-            document.getElementById('intMod').textContent = formatModifier(getAbilityModifier(intScore));
-            document.getElementById('wisMod').textContent = formatModifier(getAbilityModifier(wisScore));
-            document.getElementById('chaMod').textContent = formatModifier(getAbilityModifier(chaScore));
-        }
-
-        // Roll 4d6 and drop lowest
-        function roll4d6DropLowest() {
-            const rolls = [];
-            for (let i = 0; i < 4; i++) {
-                rolls.push(Math.floor(Math.random() * 6) + 1);
+        function embaralhar(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
             }
-            rolls.sort((a, b) => b - a);
-            return rolls[0] + rolls[1] + rolls[2];
         }
 
-        // Roll random stats based on selected method
-        function rollRandomStats() {
-            const method = document.querySelector('input[name="statMethod"]:checked').value;
-            let stats = [];
+        function iniciarJogos() {
+            const area = document.getElementById("lutadores");
+            let participantes = area.value.split("\n").map(l => l.trim()).filter(Boolean);
 
-            if (method === 'standard') {
-                stats = [...standardArray];
-                // Shuffle the array
-                for (let i = stats.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [stats[i], stats[j]] = [stats[j], stats[i]];
-                }
-            } else if (method === 'pointbuy') {
-                // Simple point buy randomization (not optimal but works)
-                let points = 27;
-                stats = [8, 8, 8, 8, 8, 8];
-                
-                while (points > 0) {
-                    const statIndex = Math.floor(Math.random() * 6);
-                    if (stats[statIndex] < 15) {
-                        const cost = pointBuyCosts[stats[statIndex] + 1] - pointBuyCosts[stats[statIndex]];
-                        if (cost <= points) {
-                            stats[statIndex]++;
-                            points -= cost;
-                        }
+            if (participantes.length < 2) {
+                alert("Digite pelo menos 2 participantes.");
+                return;
+            }
+
+            embaralhar(participantes);
+            const resultado = document.getElementById("resultado");
+            resultado.innerHTML = "<h2>Relatório dos Jogos</h2>";
+
+            let rodada = 1;
+            const causas = [...motivos]
+
+            while (participantes.length > 1) {
+                const sobreviventes = [];
+                const rodadaDiv = document.createElement("div");
+                rodadaDiv.className = "rodada";
+                rodadaDiv.innerHTML = `<h3>Rodada ${rodada}</h3>`;
+                embaralhar(participantes);
+
+                for (let i = 0; i < participantes.length; i += 2) {
+                    const p1 = participantes[i];
+                    const p2 = participantes[i + 1];
+
+                    if (!p2) {
+                        rodadaDiv.innerHTML += `<div class="evento">${p1} se fingiu de morto no meio da arena.</div>`;
+                        sobreviventes.push(p1);
+                    } else {
+                        const vencedor = Math.random() < 0.5 ? p1 : p2;
+                        const perdedor = vencedor === p1 ? p2 : p1;
+
+                        const index = Math.floor(Math.random() * causas.length);
+                        const causa = causas.splice(index, 1)[0]; // remove e retorna o motivo escolhido
+
+                        rodadaDiv.innerHTML += `<div class="evento">${perdedor} foi eliminado por ${vencedor} ${causa}.</div>`;
+                        sobreviventes.push(vencedor);
                     }
                 }
-            } else if (method === 'roll') {
-                for (let i = 0; i < 6; i++) {
-                    stats.push(roll4d6DropLowest());
-                }
+
+                resultado.appendChild(rodadaDiv);
+                participantes = sobreviventes;
+                rodada++;
             }
 
-            // Assign the stats to the inputs
-            document.getElementById('strScore').value = stats[0];
-            document.getElementById('dexScore').value = stats[1];
-            document.getElementById('conScore').value = stats[2];
-            document.getElementById('intScore').value = stats[3];
-            document.getElementById('wisScore').value = stats[4];
-            document.getElementById('chaScore').value = stats[5];
-            
-            // Update modifiers
-            updateAbilityModifiers();
-        }
-
-        // Generate a random name
-        function generateRandomName(race, gender) {
-            const firstNames = {
-                human: { male: ["James", "John", "Robert", "Michael", "William"], 
-                        female: ["Mary", "Patricia", "Jennifer", "Linda", "Elizabeth"] },
-                elf: { male: ["Aelar", "Aramil", "Beren", "Carric", "Erdan"], 
-                      female: ["Adrie", "Bethrynna", "Birel", "Filaurel", "Meriele"] },
-                dwarf: { male: ["Barendd", "Brottor", "Eberk", "Oskar", "Rurik"], 
-                        female: ["Artin", "Audhild", "Dagnal", "Ilde", "Sif"] },
-                halfling: { male: ["Alton", "Cade", "Corrin", "Eldon", "Finnan"], 
-                           female: ["Andry", "Bree", "Callie", "Kithri", "Lara"] }
-            };
-
-            const lastNames = {
-                human: ["Smith", "Johnson", "Williams", "Brown", "Jones"],
-                elf: ["Amakiir", "Galanodel", "Holimion", "Liadon", "Meliamne"],
-                dwarf: ["Balderk", "Dankil", "Gorunn", "Holderhek", "Lutgehr"],
-                halfling: ["Brushgather", "Goodbarrel", "Greenbottle", "Highhill", "Tealeaf"]
-            };
-
-            // Simplify race for name generation
-            let raceKey = "human";
-            if (race.includes("Elf")) raceKey = "elf";
-            else if (race.includes("Dwarf")) raceKey = "elf";
-            else if (race.includes("Halfling")) raceKey = "halfling";
-
-            gender = gender || (Math.random() > 0.5 ? "male" : "female");
-            
-            const firstNameList = firstNames[raceKey][gender];
-            const lastNameList = lastNames[raceKey];
-            
-            const firstName = firstNameList[Math.floor(Math.random() * firstNameList.length)];
-            const lastName = lastNameList[Math.floor(Math.random() * lastNameList.length)];
-            
-            return `${firstName} ${lastName}`;
-        }
-
-        // Generate a random character
-        function generateRandomCharacter() {
-            const level = parseInt(document.getElementById('randomLevel').value);
-            const includeName = document.getElementById('includeName').checked;
-            
-            // Random race
-            const race = races[Math.floor(Math.random() * races.length)];
-            document.getElementById('raceSelect').value = race.name;
-            
-            // Trigger subrace update
-            const raceEvent = new Event('change');
-            document.getElementById('raceSelect').dispatchEvent(raceEvent);
-            
-            // Random subrace if available
-            if (race.subraces.length > 0) {
-                const subrace = race.subraces[Math.floor(Math.random() * race.subraces.length)];
-                document.getElementById('subraceSelect').value = subrace;
-            }
-            
-            // Random class
-            const cls = classes[Math.floor(Math.random() * classes.length)];
-            document.getElementById('classSelect').value = cls.name;
-            
-            // Trigger subclass update
-            const classEvent = new Event('change');
-            document.getElementById('classSelect').dispatchEvent(classEvent);
-            
-            // Random subclass if available
-            if (cls.subclasses.length > 0) {
-                const subclass = cls.subclasses[Math.floor(Math.random() * cls.subclasses.length)];
-                document.getElementById('subclassSelect').value = subclass;
-            }
-            
-            // Random background
-            const background = backgrounds[Math.floor(Math.random() * backgrounds.length)];
-            document.getElementById('backgroundSelect').value = background;
-            
-            // Random alignment
-            const alignments = ["Lawful Good", "Neutral Good", "Chaotic Good", 
-                               "Lawful Neutral", "True Neutral", "Chaotic Neutral", 
-                               "Lawful Evil", "Neutral Evil", "Chaotic Evil"];
-            const alignment = alignments[Math.floor(Math.random() * alignments.length)];
-            document.getElementById('alignmentSelect').value = alignment;
-            
-            // Random name if requested
-            if (includeName) {
-                document.getElementById('charName').value = generateRandomName(race.name);
-            } else {
-                document.getElementById('charName').value = "";
-            }
-            
-            // Roll random stats
-            document.querySelector('input[name="statMethod"][value="roll"]').checked = true;
-            rollRandomStats();
-            
-            // Set level
-            document.getElementById('levelSelect').value = level;
-            
-            // Generate the character sheet
-            generateManualCharacter();
-        }
-
-        // Generate character sheet from manual creation
-        function generateManualCharacter() {
-            // Basic info
-            const name = document.getElementById('charName').value || "Unnamed Hero";
-            const race = document.getElementById('raceSelect').value;
-            const subrace = document.getElementById('subraceSelect').value;
-            const cls = document.getElementById('classSelect').value;
-            const subclass = document.getElementById('subclassSelect').value;
-            const background = document.getElementById('backgroundSelect').value;
-            const alignment = document.getElementById('alignmentSelect').value;
-            const level = parseInt(document.getElementById('levelSelect').value);
-            
-            // Ability scores
-            const strScore = parseInt(document.getElementById('strScore').value);
-            const dexScore = parseInt(document.getElementById('dexScore').value);
-            const conScore = parseInt(document.getElementById('conScore').value);
-            const intScore = parseInt(document.getElementById('intScore').value);
-            const wisScore = parseInt(document.getElementById('wisScore').value);
-            const chaScore = parseInt(document.getElementById('chaScore').value);
-            
-            const strMod = getAbilityModifier(strScore);
-            const dexMod = getAbilityModifier(dexScore);
-            const conMod = getAbilityModifier(conScore);
-            const intMod = getAbilityModifier(intScore);
-            const wisMod = getAbilityModifier(wisScore);
-            const chaMod = getAbilityModifier(chaScore);
-            
-            // Proficiency bonus based on level
-            const profBonus = Math.floor((level - 1) / 4) + 2;
-            
-            // Calculate HP based on class and CON
-            let hitDice = "1d6";
-            let hp = 6 + conMod;
-            
-            if (cls === "Barbarian") {
-                hitDice = "1d12";
-                hp = 12 + conMod;
-            } else if (["Fighter", "Paladin", "Ranger"].includes(cls)) {
-                hitDice = "1d10";
-                hp = 10 + conMod;
-            } else if (["Bard", "Cleric", "Druid", "Monk", "Rogue", "Warlock"].includes(cls)) {
-                hitDice = "1d8";
-                hp = 8 + conMod;
-            } else if (["Sorcerer", "Wizard"].includes(cls)) {
-                hitDice = "1d6";
-                hp = 6 + conMod;
-            }
-            
-            // Add HP for higher levels
-            if (level > 1) {
-                hitDice = `${level}${hitDice.slice(1)}`;
-                for (let i = 2; i <= level; i++) {
-                    // Use average or roll (we'll use average for simplicity)
-                    const average = parseInt(hitDice[0]) / 2 + 1;
-                    hp += Math.floor(average) + conMod;
-                }
-            }
-            
-            // Calculate AC (simple version - assumes no armor)
-            let ac = 10 + dexMod;
-            
-            // Saving throws (class specific)
-            const savingThrows = [];
-            if (cls === "Barbarian" || cls === "Fighter" || cls === "Paladin" || cls === "Ranger") {
-                savingThrows.push({name: "Strength", proficient: cls === "Barbarian" || cls === "Fighter", modifier: strMod + (cls === "Barbarian" || cls === "Fighter" ? profBonus : 0)});
-                savingThrows.push({name: "Constitution", proficient: cls === "Barbarian" || cls === "Fighter", modifier: conMod + (cls === "Barbarian" || cls === "Fighter" ? profBonus : 0)});
-            }
-            if (cls === "Bard" || cls === "Monk" || cls === "Rogue" || cls === "Warlock") {
-                savingThrows.push({name: "Dexterity", proficient: cls === "Monk" || cls === "Rogue", modifier: dexMod + (cls === "Monk" || cls === "Rogue" ? profBonus : 0)});
-                savingThrows.push({name: "Charisma", proficient: cls === "Bard" || cls === "Warlock", modifier: chaMod + (cls === "Bard" || cls === "Warlock" ? profBonus : 0)});
-            }
-            if (cls === "Cleric" || cls === "Druid" || cls === "Wizard") {
-                savingThrows.push({name: "Wisdom", proficient: cls === "Cleric" || cls === "Druid", modifier: wisMod + (cls === "Cleric" || cls === "Druid" ? profBonus : 0)});
-                savingThrows.push({name: "Intelligence", proficient: cls === "Wizard", modifier: intMod + (cls === "Wizard" ? profBonus : 0)});
-            }
-            if (cls === "Sorcerer") {
-                savingThrows.push({name: "Constitution", proficient: true, modifier: conMod + profBonus});
-                savingThrows.push({name: "Charisma", proficient: true, modifier: chaMod + profBonus});
-            }
-            if (cls === "Paladin") {
-                savingThrows.push({name: "Wisdom", proficient: true, modifier: wisMod + profBonus});
-                savingThrows.push({name: "Charisma", proficient: true, modifier: chaMod + profBonus});
-            }
-            
-            // Skills (simplified - just 2 random skills for demo)
-            const skillProficiencies = [];
-            const randomSkills = [...skills].sort(() => 0.5 - Math.random()).slice(0, 2);
-            randomSkills.forEach(skill => {
-                const ability = skill.match(/\((.*?)\)/)[1].toLowerCase();
-                let modifier;
-                if (ability === "str") modifier = strMod;
-                else if (ability === "dex") modifier = dexMod;
-                else if (ability === "con") modifier = conMod;
-                else if (ability === "int") modifier = intMod;
-                else if (ability === "wis") modifier = wisMod;
-                else if (ability === "cha") modifier = chaMod;
-                
-                skillProficiencies.push({
-                    name: skill,
-                    proficient: true,
-                    modifier: modifier + profBonus
-                });
-            });
-            
-            // Proficiencies (simplified)
-            let proficiencies = [];
-            if (cls === "Fighter") proficiencies.push("All armor", "Shields", "Simple weapons", "Martial weapons");
-            if (cls === "Wizard") proficiencies.push("Daggers", "Darts", "Slings", "Quarterstaffs", "Light crossbows");
-            
-            // Languages (simplified)
-            let languages = ["Common"];
-            if (race === "Dwarf") languages.push("Dwarvish");
-            if (race === "Elf") languages.push("Elvish");
-            
-            // Features (simplified)
-            let features = [];
-            if (cls === "Fighter" && level >= 2) features.push("Action Surge (1 use)");
-            if (cls === "Wizard") features.push("Spellcasting", "Arcane Recovery");
-            
-            // Equipment (simplified)
-            let equipment = [];
-            if (cls === "Fighter") equipment.push("Chain mail", "Martial weapon", "Shield", "Light crossbow", "Dungeoneer's pack");
-            if (cls === "Wizard") equipment.push("Spellbook", "Dagger", "Component pouch", "Scholar's pack");
-            
-            // Personality (simplified)
-            let personality = [];
-            if (background === "Acolyte") personality.push("I idolize a particular hero of my faith and constantly refer to that person's deeds and example.");
-            if (background === "Soldier") personality.push("I'm always polite and respectful.");
-            
-            // Update the character sheet display
-            document.getElementById('sheetName').textContent = name;
-            document.getElementById('sheetRaceClass').textContent = 
-                `${subrace ? subrace + " " : ""}${race} ${subclass ? subclass + " " : ""}${cls}`;
-            document.getElementById('sheetLevel').textContent = `Level ${level}`;
-            document.getElementById('sheetBackground').textContent = background;
-            document.getElementById('sheetAlignment').textContent = alignment;
-            
-            document.getElementById('sheetAC').textContent = ac;
-            document.getElementById('sheetInitiative').textContent = formatModifier(dexMod);
-            document.getElementById('sheetSpeed').textContent = race.includes("Dwarf") ? "25" : "30";
-            document.getElementById('sheetHP').textContent = hp;
-            document.getElementById('sheetHitDice').textContent = hitDice;
-            
-            document.getElementById('sheetStrScore').textContent = strScore;
-            document.getElementById('sheetStrMod').textContent = formatModifier(strMod);
-            document.getElementById('sheetDexScore').textContent = dexScore;
-            document.getElementById('sheetDexMod').textContent = formatModifier(dexMod);
-            document.getElementById('sheetConScore').textContent = conScore;
-            document.getElementById('sheetConMod').textContent = formatModifier(conMod);
-            document.getElementById('sheetIntScore').textContent = intScore;
-            document.getElementById('sheetIntMod').textContent = formatModifier(intMod);
-            document.getElementById('sheetWisScore').textContent = wisScore;
-            document.getElementById('sheetWisMod').textContent = formatModifier(wisMod);
-            document.getElementById('sheetChaScore').textContent = chaScore;
-            document.getElementById('sheetChaMod').textContent = formatModifier(chaMod);
-            
-            document.getElementById('sheetProfBonus').textContent = formatModifier(profBonus);
-            
-            // Saving throws
-            const savingThrowsElement = document.getElementById('sheetSavingThrows');
-            savingThrowsElement.innerHTML = '';
-            savingThrows.forEach(st => {
-                const div = document.createElement('div');
-                div.className = 'flex justify-between';
-                div.innerHTML = `
-                    <span>${st.name}</span>
-                    <span>${formatModifier(st.modifier)}</span>
-                `;
-                savingThrowsElement.appendChild(div);
-            });
-            
-            // Skills
-            const skillsElement = document.getElementById('sheetSkills');
-            skillsElement.innerHTML = '';
-            skillProficiencies.forEach(skill => {
-                const div = document.createElement('div');
-                div.className = 'flex justify-between mb-1';
-                div.innerHTML = `
-                    <span>${skill.name.replace(/ *\([^)]*\) */g, "")}</span>
-                    <span>${formatModifier(skill.modifier)}</span>
-                `;
-                skillsElement.appendChild(div);
-            });
-            
-            // Proficiencies
-            document.getElementById('sheetProficiencies').innerHTML = `
-                <p class="mb-2"><strong>Armor:</strong> ${proficiencies.filter(p => p.includes("armor") || p.includes("Shields")).join(", ") || "None"}</p>
-                <p class="mb-2"><strong>Weapons:</strong> ${proficiencies.filter(p => p.includes("weapon") || p.includes("Dagger") || p.includes("Staff")).join(", ") || "None"}</p>
-                <p><strong>Languages:</strong> ${languages.join(", ")}</p>
-            `;
-            
-            // Features
-            const featuresElement = document.getElementById('sheetFeatures');
-            featuresElement.innerHTML = '';
-            features.forEach(feat => {
-                const div = document.createElement('div');
-                div.className = 'mb-2';
-                div.innerHTML = `<strong>${feat.split(" (")[0]}:</strong> ${feat}`;
-                featuresElement.appendChild(div);
-            });
-            
-            // Attacks
-            document.getElementById('sheetAttacks').innerHTML = `
-                <div class="mb-4">
-                    <div class="flex justify-between border-b mb-1">
-                        <strong>Weapon</strong>
-                        <strong>Attack/Damage</strong>
-                    </div>
-                    <div class="flex justify-between">
-                        <span>${cls === "Fighter" ? "Longsword" : "Dagger"}</span>
-                        <span>${formatModifier(cls === "Fighter" ? strMod + profBonus : dexMod + profBonus)}/${cls === "Fighter" ? "1d8" + formatModifier(strMod) : "1d4" + formatModifier(dexMod)}</span>
-                    </div>
-                </div>
-                ${cls === "Wizard" ? `
-                <div>
-                    <strong>Spellcasting:</strong>
-                    <p>Spell Attack: ${formatModifier(intMod + profBonus)}</p>
-                    <p>Spell Save DC: ${8 + profBonus + intMod}</p>
-                </div>
-                ` : ''}
-            `;
-            
-            // Equipment
-            const equipmentElement = document.getElementById('sheetEquipment');
-            equipmentElement.innerHTML = '';
-            equipment.forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'mb-1';
-                div.textContent = `• ${item}`;
-                equipmentElement.appendChild(div);
-            });
-            
-            // Personality
-            document.getElementById('sheetPersonality').innerHTML = `
-                ${personality.map(trait => `<p class="mb-2">• ${trait}</p>`).join('')}
-            `;
-            
-            // Show the character sheet
-            document.getElementById('characterSheet').classList.remove('hidden');
-            
-            // Scroll to the character sheet
-            document.getElementById('characterSheet').scrollIntoView({ behavior: 'smooth' });
+            resultado.innerHTML += `<h2>🏆 Único sobrevivente dos Jogos: ${participantes[0]} 🏆</h2>`;
         }
     </script>
+
 </body>
+
 </html>
